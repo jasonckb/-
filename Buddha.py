@@ -11,7 +11,7 @@ st.markdown("""
     .golden-text {
         font-size: 24px;
         font-weight: bold;
-        color: #FFD700;
+        color: #e0be02;
         text-align: center;
     }
     </style>

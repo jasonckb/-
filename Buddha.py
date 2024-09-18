@@ -179,34 +179,31 @@ def process_diamond_sutra_content(content):
     formatted_content = '<div class="diamond-sutra">'
     current_quote = ""
     current_explanation = ""
-    in_quote = True
+    quote_number = 0
 
     for line in lines:
         line = line.strip()
         if line.startswith(('1.', '2.', '3.', '4.', '5.')):
-            if current_quote or current_explanation:
-                formatted_content += format_quote_and_explanation(current_quote, current_explanation)
+            if current_quote:
+                formatted_content += format_quote_and_explanation(quote_number, current_quote, current_explanation)
+            quote_number = int(line.split('.')[0])
             current_quote = line
             current_explanation = ""
-            in_quote = True
         elif line:
-            if in_quote:
+            if current_quote and not current_explanation:
                 current_quote += " " + line
-                in_quote = False
             else:
                 current_explanation += line + "<br>"
-        else:
-            in_quote = True
 
     # Add the last quote and explanation
-    if current_quote or current_explanation:
-        formatted_content += format_quote_and_explanation(current_quote, current_explanation)
+    if current_quote:
+        formatted_content += format_quote_and_explanation(quote_number, current_quote, current_explanation)
 
     formatted_content += '</div>'
     return formatted_content
 
-def format_quote_and_explanation(quote, explanation):
-    formatted = '<div class="sutra-item">'
+def format_quote_and_explanation(number, quote, explanation):
+    formatted = f'<div class="sutra-item">'
     formatted += f'<div class="quote">{quote}</div>'
     if explanation:
         formatted += f'<div class="explanation">{explanation}</div>'
@@ -236,6 +233,7 @@ def display_diamond_sutra():
     .diamond-sutra .explanation {
         font-size: 18px;
         margin-top: 10px;
+        padding-left: 20px;
     }
     </style>
     """, unsafe_allow_html=True)

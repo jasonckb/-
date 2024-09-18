@@ -5,7 +5,7 @@ from docx import Document
 from PIL import Image
 from opencc import OpenCC
 
-st.set_page_config(page_title="佛法修行", layout="wide")
+st.set_page_config(page_title="佛法修行 - Jason Chan", layout="wide")
 
 # Initialize OpenCC converter
 cc = OpenCC('s2t')  # Simplified to Traditional

@@ -77,27 +77,18 @@ def main():
     if st.sidebar.button("金剛經"):
         display_diamond_sutra()
 
-def fetch_docx_content(url, convert=False):
+def fetch_docx_content(url):
     try:
-        st.write(f"Fetching content from: {url}")
         response = requests.get(url)
-        response.raise_for_status()  # Raise an exception for bad status codes
+        response.raise_for_status()
         doc = Document(io.BytesIO(response.content))
         full_text = []
         for para in doc.paragraphs:
-            text = para.text
-            if convert:
-                text = cc.convert(text)  # Convert to traditional Chinese if needed
-            full_text.append(text)
-        content = '\n'.join(full_text)
-        st.write(f"Fetched content (first 100 characters): {content[:100]}...")
-        return content
-    except requests.exceptions.RequestException as e:
-        st.error(f"無法獲取文件內容。錯誤：{str(e)}")
-        return ""
+            full_text.append(para.text)
+        return '\n'.join(full_text)
     except Exception as e:
-        st.error(f"處理文件時出錯。錯誤：{str(e)}")
-        return ""
+        st.error(f"Error fetching content: {str(e)}")
+        return None
 
 
 def display_hui_xiang_ji():
@@ -175,6 +166,9 @@ def display_phowa_practice():
     st.markdown("[破瓦法 - YouTube](https://www.youtube.com/watch?v=wDVoBVC5s2c&t=1072s)")
 
 def process_diamond_sutra_content(content):
+    if not content:
+        return "<p>No content available.</p>"
+    
     lines = content.split('\n')
     formatted_content = '<div class="diamond-sutra">'
     current_quote = ""

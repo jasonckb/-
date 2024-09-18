@@ -180,11 +180,36 @@ def display_diamond_sutra():
     st.header("金剛經")
     st.markdown(content, unsafe_allow_html=True)
     
-    # Checkbox for經文及翻譯
+    # Checkbox for 經文及翻譯
     if st.checkbox("經文及翻譯"):
         translation_url = "https://github.com/jasonckb/Buddha/raw/main/%E9%87%91%E5%89%9B%E7%B6%93%E5%8E%9F%E5%85%B8%E8%88%87%E7%99%BD%E8%A9%B1%E8%AD%AF%E9%87%8B.txt"
         translation_content = fetch_text_content(translation_url)
-        st.markdown(translation_content, unsafe_allow_html=True)
+        formatted_translation = format_translation_content(translation_content)
+        st.markdown(formatted_translation, unsafe_allow_html=True)
+
+def format_translation_content(content):
+    formatted_content = []
+    lines = content.splitlines()
+    chapter = ""
+    
+    for line in lines:
+        if line.startswith("###"):  # Chapter header
+            if chapter:  # Add previous chapter if exists
+                formatted_content.append(chapter)
+            chapter = f"<h3>{line[3:].strip()}</h3>"  # Format chapter header
+        elif line.startswith("##"):  # Original quote
+            formatted_content.append(f"<p><strong>{line[2:].strip()}</strong></p>")
+        elif line.startswith("---"):  # Explanation
+            formatted_content.append(f"<p>{line[3:].strip()}</p>")
+        elif line.strip() == "":  # Blank line means end of quote
+            formatted_content.append("<br>")
+    
+    if chapter:  # Add last chapter if exists
+        formatted_content.append(chapter)
+    
+    return "\n".join(formatted_content)
+
+# ... existing code ...
 
 if __name__ == "__main__":
     main()

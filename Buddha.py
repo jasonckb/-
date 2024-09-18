@@ -214,14 +214,16 @@ def process_diamond_sutra_content(content):
     lines = content.split('\n')
     formatted_content = '<div class="diamond-sutra"><ol>'
     current_point = ""
+    current_explanation = ""
     for line in lines:
-        if line.strip().startswith(('1.', '2.', '3.', '4.', '5.')):
+        line = line.strip()
+        if line.startswith(('1.', '2.', '3.', '4.', '5.')):
             if current_point:
                 formatted_content += f'<li><div class="main-point">{current_point}</div>'
                 formatted_content += f'<div class="explanation">{current_explanation}</div></li>'
-            current_point = line.strip()
+            current_point = line
             current_explanation = ""
-        elif line.strip():
+        elif line:
             current_explanation += line + "<br>"
     
     # Add the last point

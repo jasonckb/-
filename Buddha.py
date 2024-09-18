@@ -110,15 +110,27 @@ def fetch_translation_content(url):
         st.error(f"無法獲取翻譯內容。錯誤：{str(e)}")
         return None
 
-def fetch_translation_content(url):
-    try:
-        response = requests.get(url)
-        response.raise_for_status()
-        content = response.text
-        return format_translation_content(content)
-    except requests.exceptions.RequestException as e:
-        st.error(f"無法獲取翻譯內容。錯誤：{str(e)}")
-        return None
+def format_translation_content(content):
+    formatted_content = []
+    lines = content.splitlines()
+    chapter = ""
+    
+    for line in lines:
+        if line.startswith("###"):  # Chapter header
+            if chapter:  # Add previous chapter if exists
+                formatted_content.append(chapter)
+            chapter = f"<h3>{line[3:].strip()}</h3>"  # Format chapter header
+        elif line.startswith("##"):  # Original quote
+            formatted_content.append(f"<p><strong>{line[2:].strip()}</strong></p>")
+        elif line.startswith("---"):  # Explanation
+            formatted_content.append(f"<p>{line[3:].strip()}</p>")
+        elif line.strip() == "":  # Blank line means end of quote
+            formatted_content.append("<br>")
+    
+    if chapter:  # Add last chapter if exists
+        formatted_content.append(chapter)
+    
+    return "\n".join(formatted_content)
 
 def display_hui_xiang_ji():
     url = "https://github.com/jasonckb/Buddha/raw/main/%E5%9B%9E%E5%90%91%E5%81%88.docx"
@@ -197,47 +209,36 @@ def display_phowa_practice():
 def display_diamond_sutra():
     st.header("金剛經")
     
-    # Initialize session state for checkbox and content
-    if 'show_translation' not in st.session_state:
-        st.session_state.show_translation = False
-    if 'original_content' not in st.session_state:
-        st.session_state.original_content = None
-    if 'translation_content' not in st.session_state:
-        st.session_state.translation_content = None
-
-    # Fetch the original text content if not already in session state
-    if st.session_state.original_content is None:
-        url = "https://raw.githubusercontent.com/jasonckb/Buddha/main/%E9%87%91%E5%89%9B%E7%B6%93%E7%B2%BE%E5%8F%A5.txt"
-        st.session_state.original_content = fetch_text_content(url)
+    # Fetch the original text content
+    url_original = "https://raw.githubusercontent.com/jasonckb/Buddha/main/%E9%87%91%E5%89%9B%E7%B6%93%E7%B2%BE%E5%8F%A5.txt"
+    content_original = fetch_text_content(url_original)
     
-    # Display original content
-    if st.session_state.original_content:
-        parts = st.session_state.original_content.split('\n\n')
-        for part in parts:
-            if part.startswith('##'):
-                st.markdown(f"**{part[2:].strip()}**")
-            elif part.startswith('---'):
-                st.write(part[3:].strip())
-            else:
-                st.write(part.strip())
-    else:
-        st.error("無法獲取金剛經內容。")
+    # Fetch the translation content
+    url_translation = "https://raw.githubusercontent.com/jasonckb/Buddha/main/%E9%87%91%E5%89%9B%E7%B6%93%E5%8E%9F%E5%85%B8%E8%88%87%E7%99%BD%E8%A9%B1%E8%AD%AF%E9%87%8B.txt"
+    content_translation = fetch_translation_content(url_translation)
     
-    # Checkbox for 經文及翻譯
-    show_translation = st.checkbox("經文及翻譯", value=st.session_state.show_translation)
-    
-    if show_translation:
-        st.session_state.show_translation = True
-        # Fetch translation content if not already in session state
-        if st.session_state.translation_content is None:
-            translation_url = "https://raw.githubusercontent.com/jasonckb/Buddha/main/%E9%87%91%E5%89%9B%E7%B6%93%E5%8E%9F%E5%85%B8%E8%88%87%E7%99%BD%E8%A9%B1%E8%AD%AF%E9%87%8B.txt"
-            st.session_state.translation_content = fetch_translation_content(translation_url)
+    if content_original and content_translation:
+        # Create two columns
+        col1, col2 = st.columns(2)
         
-        if st.session_state.translation_content:
-            st.markdown(st.session_state.translation_content, unsafe_allow_html=True)
-        else:
-            st.error("無法獲取經文及翻譯內容。")
+        with col1:
+            st.subheader("金剛經精句")
+            parts = content_original.split('\n\n')
+            for part in parts:
+                if part.startswith('##'):
+                    st.markdown(f"**{part[2:].strip()}**")
+                elif part.startswith('---'):
+                    st.write(part[3:].strip())
+                else:
+                    st.write(part.strip())
+        
+        with col2:
+            st.subheader("經文及翻譯")
+            st.markdown(content_translation, unsafe_allow_html=True)
     else:
-        st.session_state.show_translation = False
+        if not content_original:
+            st.error("無法獲取金剛經精句內容。")
+        if not content_translation:
+            st.error("無法獲取經文及翻譯內容。")
 if __name__ == "__main__":
     main()

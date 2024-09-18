@@ -5,7 +5,7 @@ from docx import Document
 
 st.set_page_config(page_title="佛法修行", layout="wide")
 
-# Custom CSS for the golden yellow text and responsive video
+# Custom CSS for the golden yellow text, responsive video, and larger content text
 st.markdown("""
     <style>
     .golden-text {
@@ -27,6 +27,10 @@ st.markdown("""
         left: 0;
         width: 100%;
         height: 100%;
+    }
+    .large-content {
+        font-size: 20px;
+        line-height: 1.6;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -75,7 +79,7 @@ def display_hui_xiang_ji():
     content = fetch_docx_content(url)
     
     st.header("迴向偈")
-    st.write(content)
+    st.markdown(f'<div class="large-content">{content}</div>', unsafe_allow_html=True)
     
     st.write("更多資訊：")
     st.markdown("[迴向偈 - 星雲大師著作全集](https://books.masterhsingyun.org/ArticleDetail/artcle9851)")
@@ -85,17 +89,17 @@ def display_medicine_buddha_mantra():
     content = fetch_docx_content(url)
     
     st.header("藥師咒")
-    st.write(content)
+    st.markdown(f'<div class="large-content">{content}</div>', unsafe_allow_html=True)
     
     st.write("藥師咒影片：")
     st.markdown("""
     <div class="video-container">
-        <iframe src="https://www.youtube.com/embed/5UnbgjkbgUI?start=1218" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        <iframe src="https://www.youtube.com/embed/5UnbgjkbgUI?start=1218&end=1242" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
     </div>
     """, unsafe_allow_html=True)
     
     st.write("影片來源：")
-    st.markdown("[藥師咒 - YouTube](https://www.youtube.com/embed/5UnbgjkbgUI?start=1218&end=1242)")
+    st.markdown("[藥師咒 - YouTube](https://www.youtube.com/watch?v=5UnbgjkbgUI&t=1218s)")
 
 if __name__ == "__main__":
     main()

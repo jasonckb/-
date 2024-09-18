@@ -59,6 +59,8 @@ def main():
     st.sidebar.header("持咒")
     if st.sidebar.button("藥師咒"):
         display_medicine_buddha_mantra()
+    if st.sidebar.button("大悲咒"):
+        display_great_compassion_mantra()
 
 def fetch_docx_content(url):
     try:
@@ -100,6 +102,19 @@ def display_medicine_buddha_mantra():
     
     st.write("影片來源：")
     st.markdown("[藥師咒 - YouTube](https://www.youtube.com/watch?v=5UnbgjkbgUI&t=1218s)")
+
+def display_great_compassion_mantra():
+    url = "https://github.com/jasonckb/Buddha/raw/main/%E5%A4%A7%E6%82%B2%E5%92%92.docx"
+    content = fetch_docx_content(url)
+    
+    st.header("大悲咒")
+    st.markdown(f'<div class="large-content">{content}</div>', unsafe_allow_html=True)
+    
+    if st.button("Play Video"):
+        st.video("https://www.youtube.com/watch?v=Hr9zmoDWppA")
+    
+    st.write("影片來源：")
+    st.markdown("[大悲咒 - YouTube](https://www.youtube.com/watch?v=Hr9zmoDWppA)")
 
 if __name__ == "__main__":
     main()

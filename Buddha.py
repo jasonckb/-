@@ -229,14 +229,18 @@ def display_diamond_sutra():
             else:
                 st.write(part.strip())
         
-        # Add some space between sections
-        st.write("")
-        st.write("---")
-        st.write("")
+        # Add some space between sections (reduced to two newlines)
+        st.write("\n\n")
         
         # Display 經文及翻譯
         st.subheader("經文及翻譯")
-        st.markdown(content_translation, unsafe_allow_html=True)
+        chapters = content_translation.split('<h3>')
+        for i, chapter in enumerate(chapters):
+            if i > 0:  # Skip the first split result as it's empty
+                chapter_content = f"<h3>{chapter}"
+                st.markdown(chapter_content, unsafe_allow_html=True)
+                if i < len(chapters) - 1:  # Add two newlines between chapters, except after the last one
+                    st.write("\n\n")
     else:
         if not content_original:
             st.error("無法獲取金剛經精句內容。")

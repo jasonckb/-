@@ -11,7 +11,7 @@ st.markdown("""
     .golden-text {
         font-size: 24px;
         font-weight: bold;
-        color: #e0be02;
+        color: #FFD700;
         text-align: center;
     }
     </style>
@@ -36,6 +36,11 @@ def main():
     st.sidebar.header("迴向")
     if st.sidebar.button("迴向偈"):
         display_hui_xiang_ji()
+    
+    # 持咒 section
+    st.sidebar.header("持咒")
+    if st.sidebar.button("藥師咒"):
+        display_medicine_buddha_mantra()
 
 def fetch_docx_content(url):
     try:
@@ -60,6 +65,19 @@ def display_hui_xiang_ji():
     
     st.write("更多資訊：")
     st.markdown("[迴向偈 - 星雲大師著作全集](https://books.masterhsingyun.org/ArticleDetail/artcle9851)")
+
+def display_medicine_buddha_mantra():
+    url = "https://github.com/jasonckb/Buddha/raw/main/%E8%97%A5%E5%B8%AB%E5%92%92.docx"
+    content = fetch_docx_content(url)
+    
+    st.header("藥師咒")
+    st.write(content)
+    
+    if st.button("Play Video"):
+        st.video("https://github.com/jasonckb/Buddha/raw/main/Mantra%20of%20Medicine%20Buddha.mp4")
+    
+    st.write("影片來源：")
+    st.markdown("[藥師咒 - YouTube](https://www.youtube.com/watch?v=5UnbgjkbgUI&t=1218s)")
 
 if __name__ == "__main__":
     main()

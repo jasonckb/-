@@ -218,27 +218,31 @@ def display_diamond_sutra():
     content_translation = fetch_translation_content(url_translation)
     
     if content_original and content_translation:
-        # Create two columns
-        col1, col2 = st.columns(2)
+        # Display 金剛經精句
+        st.subheader("金剛經精句")
+        parts = content_original.split('\n\n')
+        for part in parts:
+            if part.startswith('##'):
+                st.markdown(f"**{part[2:].strip()}**")
+            elif part.startswith('---'):
+                st.write(part[3:].strip())
+            else:
+                st.write(part.strip())
         
-        with col1:
-            st.subheader("金剛經精句")
-            parts = content_original.split('\n\n')
-            for part in parts:
-                if part.startswith('##'):
-                    st.markdown(f"**{part[2:].strip()}**")
-                elif part.startswith('---'):
-                    st.write(part[3:].strip())
-                else:
-                    st.write(part.strip())
+        # Add some space between sections
+        st.write("")
+        st.write("---")
+        st.write("")
         
-        with col2:
-            st.subheader("經文及翻譯")
-            st.markdown(content_translation, unsafe_allow_html=True)
+        # Display 經文及翻譯
+        st.subheader("經文及翻譯")
+        st.markdown(content_translation, unsafe_allow_html=True)
     else:
         if not content_original:
             st.error("無法獲取金剛經精句內容。")
         if not content_translation:
             st.error("無法獲取經文及翻譯內容。")
+
+# The fetch_text_content, fetch_translation_content, and format_translation_content functions remain the same
 if __name__ == "__main__":
     main()

@@ -6,6 +6,8 @@ from PIL import Image
 
 st.set_page_config(page_title="佛法修行", layout="wide")
 
+cc = OpenCC('s2t')  # Simplified to Traditional
+
 # Custom CSS for the golden yellow text, responsive video, and larger content text
 st.markdown("""
     <style>

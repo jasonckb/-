@@ -71,20 +71,20 @@ def main():
     st.sidebar.header("三想破瓦法")
     if st.sidebar.button("破瓦法"):
         display_phowa_practice()
-    
-    # 佛經 section
-    st.sidebar.header("佛經")
-    if st.sidebar.button("金剛經"):
-        display_diamond_sutra()
 
-def fetch_txt_content(url):
+def fetch_docx_content(url):
     try:
         response = requests.get(url)
-        response.raise_for_status()
-        return response.text
+        response.raise_for_status()  # Raise an exception for bad status codes
+        doc = Document(io.BytesIO(response.content))
+        full_text = []
+        for para in doc.paragraphs:
+            full_text.append(cc.convert(para.text))  # Convert to traditional Chinese
+        return '\n'.join(full_text)
+    except requests.exceptions.RequestException as e:
+        return cc.convert(f"無法獲取文件內容。錯誤：{str(e)}")
     except Exception as e:
-        st.error(f"Error fetching content: {str(e)}")
-        return None
+        return cc.convert(f"處理文件時出錯。錯誤：{str(e)}")
 
 def display_hui_xiang_ji():
     url = "https://github.com/jasonckb/Buddha/raw/main/%E5%9B%9E%E5%90%91%E5%81%88.docx"
@@ -159,48 +159,6 @@ def display_phowa_practice():
     # Display video source
     st.write("影片來源：")
     st.markdown("[破瓦法 - YouTube](https://www.youtube.com/watch?v=wDVoBVC5s2c&t=1072s)")
-
-def parse_diamond_sutra_content(content):
-    sections = content.split('##')[1:]  # Split by '##' and remove the first empty element
-    parsed_content = []
-    for section in sections:
-        parts = section.split('---')
-        if len(parts) == 2:
-            quote = parts[0].strip()
-            explanation = parts[1].strip()
-            parsed_content.append((quote, explanation))
-    return parsed_content
-
-def display_diamond_sutra():
-    st.header("金剛經精句")
-    
-    # Updated URL to fetch raw content
-    url = "https://raw.githubusercontent.com/jasonckb/Buddha/main/%E9%87%91%E5%89%9B%E7%B6%93%E7%B2%BE%E5%8F%A5.txt"
-    content = fetch_txt_content(url)
-    
-    if content:
-        parsed_content = parse_diamond_sutra_content(content)
-        for quote, explanation in parsed_content:
-            st.markdown(f"**{quote}**")
-            st.write(explanation)
-            st.write("---")
-    else:
-        st.error("無法顯示金剛經內容。請檢查網絡連接或文件鏈接。")
-    
-    if st.button("經文及翻譯"):
-        display_diamond_sutra_translation()
-
-def display_diamond_sutra_translation():
-    st.header("金剛經經文及翻譯")
-    
-    # You'll need to update this URL as well if you have a translation file
-    url = "https://raw.githubusercontent.com/jasonckb/Buddha/main/%E9%87%91%E5%89%9B%E7%B6%93%E5%8E%9F%E5%85%B8%E8%88%87%E7%99%BD%E8%A9%B1%E8%AD%AF%E9%87%8B.txt"
-    content = fetch_txt_content(url)
-    
-    if content:
-        st.write(content)
-    else:
-        st.error("無法顯示金剛經經文及翻譯。請檢查網絡連接或文件鏈接。")
 
 if __name__ == "__main__":
     main()

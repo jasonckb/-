@@ -110,8 +110,12 @@ def display_great_compassion_mantra():
     st.header("大悲咒")
     st.markdown(f'<div class="large-content">{content}</div>', unsafe_allow_html=True)
     
-    if st.button("Play Video"):
-        st.video("https://www.youtube.com/watch?v=Hr9zmoDWppA")
+    st.write("大悲咒影片：")
+    st.markdown("""
+    <div class="video-container">
+        <iframe src="https://www.youtube.com/embed/Hr9zmoDWppA?start=0&end=162" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    </div>
+    """, unsafe_allow_html=True)
     
     st.write("影片來源：")
     st.markdown("[大悲咒 - YouTube](https://www.youtube.com/watch?v=Hr9zmoDWppA)")

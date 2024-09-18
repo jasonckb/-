@@ -55,9 +55,6 @@ st.markdown("""
 def main():
     st.title("佛法修行")
 
-    if 'show_translation' not in st.session_state:
-        st.session_state.show_translation = False
-
     # Sidebar
     st.sidebar.title("修行內容")
     

@@ -79,13 +79,16 @@ def main():
 
 def fetch_docx_content(url):
     try:
+        st.write(f"Fetching content from: {url}")
         response = requests.get(url)
         response.raise_for_status()
         doc = Document(io.BytesIO(response.content))
         full_text = []
         for para in doc.paragraphs:
             full_text.append(para.text)
-        return '\n'.join(full_text)
+        content = '\n'.join(full_text)
+        st.write(f"Fetched content (first 100 chars): {content[:100]}...")
+        return content
     except Exception as e:
         st.error(f"Error fetching content: {str(e)}")
         return None
@@ -165,87 +168,31 @@ def display_phowa_practice():
     st.write("影片來源：")
     st.markdown("[破瓦法 - YouTube](https://www.youtube.com/watch?v=wDVoBVC5s2c&t=1072s)")
 
-def process_diamond_sutra_content(content):
-    if not content:
-        return "<p>No content available.</p>"
-    
-    lines = content.split('\n')
-    formatted_content = '<div class="diamond-sutra">'
-    current_quote = ""
-    current_explanation = ""
-    quote_number = 0
-
-    for line in lines:
-        line = line.strip()
-        if line.startswith(('1.', '2.', '3.', '4.', '5.')):
-            if current_quote:
-                formatted_content += format_quote_and_explanation(quote_number, current_quote, current_explanation)
-            quote_number = int(line.split('.')[0])
-            current_quote = line
-            current_explanation = ""
-        elif line:
-            if current_quote and not current_explanation:
-                current_quote += " " + line
-            else:
-                current_explanation += line + "<br>"
-
-    # Add the last quote and explanation
-    if current_quote:
-        formatted_content += format_quote_and_explanation(quote_number, current_quote, current_explanation)
-
-    formatted_content += '</div>'
-    return formatted_content
-
-def format_quote_and_explanation(number, quote, explanation):
-    formatted = f'<div class="sutra-item">'
-    formatted += f'<div class="quote">{quote}</div>'
-    if explanation:
-        formatted += f'<div class="explanation">{explanation}</div>'
-    formatted += '</div>'
-    return formatted
-
 def display_diamond_sutra():
-    st.header("金剛經精句")
-    
-    # Custom CSS for the diamond sutra display
-    st.markdown("""
-    <style>
-    .diamond-sutra {
-        font-size: 18px;
-        line-height: 1.6;
-    }
-    .diamond-sutra .sutra-item {
-        margin-bottom: 30px;
-    }
-    .diamond-sutra .quote {
-        font-size: 22px;
-        font-weight: bold;
-        margin-bottom: 10px;
-        text-decoration: underline;
-        text-underline-offset: 5px;
-    }
-    .diamond-sutra .explanation {
-        font-size: 18px;
-        margin-top: 10px;
-        padding-left: 20px;
-    }
-    </style>
-    """, unsafe_allow_html=True)
-    
-    # Display content from 金剛經精句.docx file
+    st.write("Displaying Diamond Sutra content...")
     url = "https://github.com/jasonckb/Buddha/raw/main/%E9%87%91%E5%89%9B%E7%B6%93%E7%B2%BE%E5%8F%A5.docx"
     content = fetch_docx_content(url)
     
     if content:
-        # Process and format the content
-        formatted_content = process_diamond_sutra_content(content)
-        st.markdown(formatted_content, unsafe_allow_html=True)
+        st.header("金剛經精句")
+        st.write(content)
     else:
         st.error("無法顯示金剛經內容。請檢查網絡連接或文件鏈接。")
     
-    # Button for 經文及翻譯
     if st.button("經文及翻譯"):
+        st.write("Translation button clicked")
         display_diamond_sutra_translation()
+
+def display_diamond_sutra_translation():
+    st.write("Displaying Diamond Sutra translation...")
+    url = "https://github.com/jasonckb/Buddha/raw/main/%E9%87%91%E5%89%9B%E7%B6%93%E5%8E%9F%E5%85%B8%E8%88%87%E7%99%BD%E8%A9%B1%E8%AD%AF%E9%87%8B.docx"
+    content = fetch_docx_content(url)
+    
+    if content:
+        st.header("金剛經經文及翻譯")
+        st.write(content)
+    else:
+        st.error("無法顯示金剛經經文及翻譯。請檢查網絡連接或文件鏈接。")
     
     # Display source
     st.write("來源：")

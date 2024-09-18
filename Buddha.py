@@ -121,16 +121,17 @@ def format_translation_content(content):
                 formatted_content.append(chapter)
             chapter = f"<h3>{line[3:].strip()}</h3>"  # Format chapter header
         elif line.startswith("##"):  # Original quote
-            formatted_content.append(f"<p><strong>{line[2:].strip()}</strong></p>")
+            chapter += f"<p><strong>{line[2:].strip()}</strong></p>"
         elif line.startswith("---"):  # Explanation
-            formatted_content.append(f"<p>{line[3:].strip()}</p>")
+            chapter += f"<p>{line[3:].strip()}</p>"
         elif line.strip() == "":  # Blank line means end of quote
-            formatted_content.append("<br>")
+            chapter += "<br>"
     
     if chapter:  # Add last chapter if exists
         formatted_content.append(chapter)
     
-    return "\n".join(formatted_content)
+    # Join chapters with exactly two line breaks
+    return "<br><br>".join(formatted_content)
 
 def display_hui_xiang_ji():
     url = "https://github.com/jasonckb/Buddha/raw/main/%E5%9B%9E%E5%90%91%E5%81%88.docx"
@@ -229,24 +230,17 @@ def display_diamond_sutra():
             else:
                 st.write(part.strip())
         
-        # Add some space between sections (reduced to two newlines)
-        st.write("\n\n")
+        # Add exactly two rows of space
+        st.markdown("<br><br>", unsafe_allow_html=True)
         
         # Display 經文及翻譯
         st.subheader("經文及翻譯")
-        chapters = content_translation.split('<h3>')
-        for i, chapter in enumerate(chapters):
-            if i > 0:  # Skip the first split result as it's empty
-                chapter_content = f"<h3>{chapter}"
-                st.markdown(chapter_content, unsafe_allow_html=True)
-                if i < len(chapters) - 1:  # Add two newlines between chapters, except after the last one
-                    st.write("\n\n")
+        st.markdown(content_translation, unsafe_allow_html=True)
     else:
         if not content_original:
             st.error("無法獲取金剛經精句內容。")
         if not content_translation:
             st.error("無法獲取經文及翻譯內容。")
 
-# The fetch_text_content, fetch_translation_content, and format_translation_content functions remain the same
 if __name__ == "__main__":
     main()

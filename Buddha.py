@@ -114,41 +114,41 @@ def format_translation_content(content):
     formatted_content = []
     lines = content.splitlines()
     chapter = ""
-    current_content = ""
+    current_quote = ""
+    current_explanation = ""
     is_explanation = False
     
     for line in lines:
         if line.startswith("###"):  # Chapter header
             if chapter:  # Add previous chapter if exists
+                if current_quote:
+                    chapter += f"{current_quote}<p>{current_explanation}</p>"
                 formatted_content.append(chapter)
             chapter = f"<h3>{line[3:].strip()}</h3>"  # Format chapter header
-            current_content = ""
+            current_quote = ""
+            current_explanation = ""
             is_explanation = False
         elif line.startswith("##"):  # Original quote
-            if current_content:
-                chapter += current_content
-            current_content = f"<p><strong>{line[2:].strip()}</strong></p>"
+            if current_quote:  # Add previous quote and explanation if exists
+                chapter += f"{current_quote}<p>{current_explanation}</p>"
+            current_quote = f"<p><strong>{line[2:].strip()}</strong></p>"
+            current_explanation = ""
             is_explanation = False
         elif line.startswith("---"):  # Start of explanation
             is_explanation = True
-            current_content += "<p>"
+        elif is_explanation:  # Continuation of explanation
+            current_explanation += line + " "
         elif line.strip() == "":  # Blank line
-            if is_explanation:
-                current_content += "</p>"
-                chapter += current_content
-                current_content = ""
-                is_explanation = False
-        else:  # Content line
-            if is_explanation:
-                current_content += line + " "
+            continue  # Skip blank lines
+        else:  # Other content (likely part of the quote)
+            if not current_quote:
+                current_quote = f"<p>{line}</p>"
             else:
-                current_content += f"<p>{line}</p>"
+                current_quote += f" {line}"
     
-    # Add last content and chapter if exists
-    if current_content:
-        if is_explanation:
-            current_content += "</p>"
-        chapter += current_content
+    # Add last quote and explanation if exists
+    if current_quote:
+        chapter += f"{current_quote}<p>{current_explanation}</p>"
     if chapter:
         formatted_content.append(chapter)
     

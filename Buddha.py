@@ -72,6 +72,11 @@ def main():
     if st.sidebar.button("破瓦法"):
         display_phowa_practice()
 
+    # 佛經 section
+    st.sidebar.header("佛經")
+    if st.sidebar.button("金剛經"):
+        display_diamond_sutra()
+
 def fetch_docx_content(url):
     try:
         response = requests.get(url)
@@ -85,6 +90,14 @@ def fetch_docx_content(url):
         return cc.convert(f"無法獲取文件內容。錯誤：{str(e)}")
     except Exception as e:
         return cc.convert(f"處理文件時出錯。錯誤：{str(e)}")
+
+def fetch_text_content(url):
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        return response.text
+    except requests.exceptions.RequestException as e:
+        return f"無法獲取文件內容。錯誤：{str(e)}"
 
 def display_hui_xiang_ji():
     url = "https://github.com/jasonckb/Buddha/raw/main/%E5%9B%9E%E5%90%91%E5%81%88.docx"
@@ -159,6 +172,19 @@ def display_phowa_practice():
     # Display video source
     st.write("影片來源：")
     st.markdown("[破瓦法 - YouTube](https://www.youtube.com/watch?v=wDVoBVC5s2c&t=1072s)")
+
+def display_diamond_sutra():
+    url = "https://github.com/jasonckb/Buddha/raw/main/%E9%87%91%E5%89%9B%E7%B6%93%E7%B2%BE%E5%8F%A5.txt"
+    content = fetch_text_content(url)
+    
+    st.header("金剛經")
+    st.markdown(content, unsafe_allow_html=True)
+    
+    # Checkbox for經文及翻譯
+    if st.checkbox("經文及翻譯"):
+        translation_url = "https://github.com/jasonckb/Buddha/raw/main/%E9%87%91%E5%89%9B%E7%B6%93%E5%8E%9F%E5%85%B8%E8%88%87%E7%99%BD%E8%A9%B1%E8%AD%AF%E9%87%8B.txt"
+        translation_content = fetch_text_content(translation_url)
+        st.markdown(translation_content, unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()

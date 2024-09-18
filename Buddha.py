@@ -185,6 +185,7 @@ def display_phowa_practice():
     st.markdown("[破瓦法 - YouTube](https://www.youtube.com/watch?v=wDVoBVC5s2c&t=1072s)")
 
 def display_diamond_sutra():
+    # Fetch the original text content
     url = "https://raw.githubusercontent.com/jasonckb/Buddha/main/%E9%87%91%E5%89%9B%E7%B6%93%E7%B2%BE%E5%8F%A5.txt"
     content = fetch_text_content(url)
     
@@ -196,7 +197,9 @@ def display_diamond_sutra():
         st.error("無法獲取金剛經內容。")
     
     # Checkbox for 經文及翻譯
-    if st.checkbox("經文及翻譯"):
+    show_translation = st.checkbox("經文及翻譯")
+    
+    if show_translation:
         translation_url = "https://raw.githubusercontent.com/jasonckb/Buddha/main/%E9%87%91%E5%89%9B%E7%B6%93%E5%8E%9F%E5%85%B8%E8%88%87%E7%99%BD%E8%A9%B1%E8%AD%AF%E9%87%8B.txt"
         translation_content = fetch_translation_content(translation_url)
         
@@ -205,6 +208,25 @@ def display_diamond_sutra():
         else:
             st.error("無法獲取經文及翻譯內容。")
             
+def fetch_text_content(url):
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        return response.text
+    except requests.exceptions.RequestException as e:
+        st.error(f"無法獲取文件內容。錯誤：{str(e)}")
+        return None
+
+def fetch_translation_content(url):
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        content = response.text
+        return format_translation_content(content)
+    except requests.exceptions.RequestException as e:
+        st.error(f"無法獲取翻譯內容。錯誤：{str(e)}")
+        return None
+
 def format_translation_content(content):
     formatted_content = []
     lines = content.splitlines()

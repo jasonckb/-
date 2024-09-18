@@ -95,7 +95,7 @@ def display_medicine_buddha_mantra():
     """, unsafe_allow_html=True)
     
     st.write("影片來源：")
-    st.markdown("[藥師咒 - YouTube](https://www.youtube.com/watch?v=5UnbgjkbgUI&t=1218s)")
+    st.markdown("[藥師咒 - YouTube](https://www.youtube.com/embed/5UnbgjkbgUI?start=1218&end=1242)")
 
 if __name__ == "__main__":
     main()

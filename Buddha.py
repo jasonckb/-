@@ -4,7 +4,30 @@ import io
 from docx import Document
 
 st.set_page_config(page_title="佛法修行", layout="wide")
+
+# Custom CSS for the golden yellow text
+st.markdown("""
+    <style>
+    .golden-text {
+        font-size: 24px;
+        font-weight: bold;
+        color: #FFD700;
+        text-align: center;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
 st.title("佛法修行")
+
+# Adding the text in large, bold, golden yellow font
+st.markdown("""
+    <p class="golden-text">
+    願以此功德，莊嚴佛淨土，<br>
+    上報四重恩，下濟三途苦。<br>
+    若有見聞者，悉發菩提心，<br>
+    盡此一報身，同生極樂國。
+    </p>
+    """, unsafe_allow_html=True)
 
 def main():
     # Sidebar

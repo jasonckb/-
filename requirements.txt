@@ -1,11 +1,10 @@
 streamlit
-yfinance 
 pandas
 numpy 
 matplotlib
 datetime
 plotly
-plotly==5.14.1
 requests
+python-docx
 beautifulsoup4
-yahoofinancials
+

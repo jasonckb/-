@@ -91,14 +91,27 @@ def fetch_docx_content(url):
     except Exception as e:
         return cc.convert(f"處理文件時出錯。錯誤：{str(e)}")
 
-def fetch_text_content(url):
-    try:
-        response = requests.get(url)
-        response.raise_for_status()
-        return response.text
-    except requests.exceptions.RequestException as e:
-        st.error(f"無法獲取文件內容。錯誤：{str(e)}")
-        return None
+def format_translation_content(content):
+    formatted_content = []
+    lines = content.splitlines()
+    chapter = ""
+    
+    for line in lines:
+        if line.startswith("###"):  # Chapter header
+            if chapter:  # Add previous chapter if exists
+                formatted_content.append(chapter)
+            chapter = f"<h3>{line[3:].strip()}</h3>"  # Format chapter header
+        elif line.startswith("##"):  # Original quote
+            formatted_content.append(f"<p><strong>{line[2:].strip()}</strong></p>")
+        elif line.startswith("---"):  # Explanation
+            formatted_content.append(f"<p>{line[3:].strip()}</p>")
+        elif line.strip() == "":  # Blank line means end of quote
+            formatted_content.append("<br>")
+    
+    if chapter:  # Add last chapter if exists
+        formatted_content.append(chapter)
+    
+    return "\n".join(formatted_content)
 
 def fetch_translation_content(url):
     try:
@@ -218,7 +231,5 @@ def display_diamond_sutra():
             st.markdown(translation_content, unsafe_allow_html=True)
         else:
             st.error("無法獲取經文及翻譯內容。")
-    
-    return "\n".join(formatted_content)
 if __name__ == "__main__":
     main()

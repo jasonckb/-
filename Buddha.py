@@ -91,16 +91,24 @@ def fetch_docx_content(url):
     except Exception as e:
         return cc.convert(f"處理文件時出錯。錯誤：{str(e)}")
 
-def fetch_txt_content(url):
+def fetch_text_content(url):
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        return response.text
+    except requests.exceptions.RequestException as e:
+        st.error(f"無法獲取文件內容。錯誤：{str(e)}")
+        return None
+
+def fetch_translation_content(url):
     try:
         response = requests.get(url)
         response.raise_for_status()
         content = response.text
-        return cc.convert(content)  # Convert to traditional Chinese
+        return format_translation_content(content)
     except requests.exceptions.RequestException as e:
-        return cc.convert(f"無法獲取文件內容。錯誤：{str(e)}")
-    except Exception as e:
-        return cc.convert(f"處理文件時出錯。錯誤：{str(e)}")
+        st.error(f"無法獲取翻譯內容。錯誤：{str(e)}")
+        return None
 
 def display_hui_xiang_ji():
     url = "https://github.com/jasonckb/Buddha/raw/main/%E5%9B%9E%E5%90%91%E5%81%88.docx"
@@ -146,54 +154,99 @@ def display_great_compassion_mantra():
     st.write("影片來源：")
     st.markdown("[大悲咒 - YouTube](https://www.youtube.com/watch?v=Hr9zmoDWppA)")
 
+def display_phowa_practice():
+    st.header("三想破瓦法")
+    
+    # Display image
+    image_url = "https://github.com/jasonckb/Buddha/raw/main/%E4%B8%89%E6%83%B3%E7%A0%B4%E7%93%A6%E6%B3%95.jpg"
+    response = requests.get(image_url)
+    img = Image.open(io.BytesIO(response.content))
+    st.image(img, use_column_width=True)
+    
+    # Display content from docx file
+    url = "https://github.com/jasonckb/Buddha/raw/main/%E4%B8%89%E6%83%B3%E7%A0%B4%E7%93%A6%E6%B3%95.docx"
+    content = fetch_docx_content(url)
+    st.markdown(f'<div class="large-content">{content}</div>', unsafe_allow_html=True)
+    
+    # Display source
+    st.write("文字來源：")
+    st.markdown("[三想破瓦法 - 佛教在線](http://read.goodweb.net.cn/news/news_view.asp?newsid=74024)")
+    
+    # Display video
+    st.write("破瓦法影片：")
+    st.markdown("""
+    <div class="video-container">
+        <iframe src="https://www.youtube.com/embed/wDVoBVC5s2c?start=536&end=2375" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # Display video source
+    st.write("影片來源：")
+    st.markdown("[破瓦法 - YouTube](https://www.youtube.com/watch?v=wDVoBVC5s2c&t=1072s)")
+
 def display_diamond_sutra():
+    # Fetch the original text content
+    url = "https://raw.githubusercontent.com/jasonckb/Buddha/main/%E9%87%91%E5%89%9B%E7%B6%93%E7%B2%BE%E5%8F%A5.txt"
+    content = fetch_text_content(url)
+    
     st.header("金剛經")
     
+    if content:
+        st.markdown(content, unsafe_allow_html=True)
+    else:
+        st.error("無法獲取金剛經內容。")
+    
+    # Checkbox for 經文及翻譯
+    show_translation = st.checkbox("經文及翻譯")
+    
+    if show_translation:
+        translation_url = "https://raw.githubusercontent.com/jasonckb/Buddha/main/%E9%87%91%E5%89%9B%E7%B6%93%E5%8E%9F%E5%85%B8%E8%88%87%E7%99%BD%E8%A9%B1%E8%AD%AF%E9%87%8B.txt"
+        translation_content = fetch_translation_content(translation_url)
+        
+        if translation_content:
+            st.markdown(translation_content, unsafe_allow_html=True)
+        else:
+            st.error("無法獲取經文及翻譯內容。")
+            
+def fetch_text_content(url):
     try:
-        # Fetch and display content for 金剛經精句
-        url_quotes = "https://raw.githubusercontent.com/jasonckb/Buddha/main/%E9%87%91%E5%89%9B%E7%B6%93%E7%B2%BE%E5%8F%A5.txt"
-        content_quotes = fetch_txt_content(url_quotes)
-        
-        for quote in content_quotes.split('\n\n'):
-            parts = quote.split('---')
-            if len(parts) == 2:
-                st.markdown(f"**{parts[0].strip()[2:]}**")  # Remove '##' and display as bold
-                st.write(parts[1].strip())
-        
-        # Checkbox for full content
-        if st.checkbox("經文及翻譯"):
-            st.write("Checkbox checked. Fetching full content...")
-            url_full = "https://raw.githubusercontent.com/jasonckb/Buddha/main/%E9%87%91%E5%89%9B%E7%B6%93%E5%8E%9F%E5%85%B8%E8%88%87%E7%99%BD%E8%A9%B1%E8%AD%AF%E9%87%8B.txt"
-            content_full = fetch_txt_content(url_full)
-            st.write(f"Full content fetched. Length: {len(content_full)} characters")
-            
-            chapters = content_full.split('###')[1:]  # Split by chapters, ignore the first empty part
-            st.write(f"Number of chapters: {len(chapters)}")
-            
-            for i, chapter in enumerate(chapters):
-                st.write(f"Processing chapter {i+1}")
-                chapter_parts = chapter.strip().split('\n', 1)
-                if len(chapter_parts) == 2:
-                    st.subheader(chapter_parts[0].strip())  # Chapter title
-                    content = chapter_parts[1].strip()
-                    
-                    paragraphs = content.split('\n\n')
-                    st.write(f"Number of paragraphs in chapter {i+1}: {len(paragraphs)}")
-                    
-                    for paragraph in paragraphs:
-                        if paragraph.startswith('##'):
-                            st.markdown(f"**{paragraph[2:].strip()}**")
-                        elif paragraph.startswith('---'):
-                            st.write(paragraph[3:].strip())
-                        else:
-                            st.write(paragraph.strip())
-                else:
-                    st.write(f"Chapter {i+1} doesn't have the expected format")
-            
-            st.write("Finished processing all chapters")
-    except Exception as e:
-        st.error(f"An error occurred: {str(e)}")
-        st.write("Traceback:")
-        st.code(traceback.format_exc())
+        response = requests.get(url)
+        response.raise_for_status()
+        return response.text
+    except requests.exceptions.RequestException as e:
+        st.error(f"無法獲取文件內容。錯誤：{str(e)}")
+        return None
+
+def fetch_translation_content(url):
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        content = response.text
+        return format_translation_content(content)
+    except requests.exceptions.RequestException as e:
+        st.error(f"無法獲取翻譯內容。錯誤：{str(e)}")
+        return None
+
+def format_translation_content(content):
+    formatted_content = []
+    lines = content.splitlines()
+    chapter = ""
+    
+    for line in lines:
+        if line.startswith("###"):  # Chapter header
+            if chapter:  # Add previous chapter if exists
+                formatted_content.append(chapter)
+            chapter = f"<h3>{line[3:].strip()}</h3>"  # Format chapter header
+        elif line.startswith("##"):  # Original quote
+            formatted_content.append(f"<p><strong>{line[2:].strip()}</strong></p>")
+        elif line.startswith("---"):  # Explanation
+            formatted_content.append(f"<p>{line[3:].strip()}</p>")
+        elif line.strip() == "":  # Blank line means end of quote
+            formatted_content.append("<br>")
+    
+    if chapter:  # Add last chapter if exists
+        formatted_content.append(chapter)
+    
+    return "\n".join(formatted_content)
 if __name__ == "__main__":
     main()

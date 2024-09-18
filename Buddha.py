@@ -176,35 +176,41 @@ def display_phowa_practice():
 
 def process_diamond_sutra_content(content):
     lines = content.split('\n')
-    formatted_content = '<div class="diamond-sutra"><ol>'
-    current_point = ""
+    formatted_content = '<div class="diamond-sutra">'
+    current_quote = ""
     current_explanation = ""
-    in_explanation = False
+    in_quote = False
 
     for line in lines:
         line = line.strip()
         if line.startswith(('1.', '2.', '3.', '4.', '5.')):
-            if current_point:
-                formatted_content += f'<li><div class="main-point">{current_point}</div>'
-                formatted_content += f'<div class="explanation">{current_explanation}</div></li>'
-            current_point = line
+            if current_quote or current_explanation:
+                formatted_content += format_quote_and_explanation(current_quote, current_explanation)
+            current_quote = line
             current_explanation = ""
-            in_explanation = False
+            in_quote = True
         elif line:
-            if not in_explanation and current_point:
-                in_explanation = True
-            if in_explanation:
-                current_explanation += line + "<br>"
+            if in_quote:
+                current_quote += " " + line
             else:
-                current_point += " " + line
+                current_explanation += line + "<br>"
+        else:
+            in_quote = False
 
-    # Add the last point
-    if current_point:
-        formatted_content += f'<li><div class="main-point">{current_point}</div>'
-        formatted_content += f'<div class="explanation">{current_explanation}</div></li>'
+    # Add the last quote and explanation
+    if current_quote or current_explanation:
+        formatted_content += format_quote_and_explanation(current_quote, current_explanation)
 
-    formatted_content += '</ol></div>'
+    formatted_content += '</div>'
     return formatted_content
+
+def format_quote_and_explanation(quote, explanation):
+    formatted = f'<div class="sutra-item">'
+    formatted += f'<div class="quote">{quote}</div>'
+    if explanation:
+        formatted += f'<div class="explanation">{explanation}</div>'
+    formatted += '</div>'
+    return formatted
 
 def display_diamond_sutra():
     st.header("金剛經精句")
@@ -216,20 +222,19 @@ def display_diamond_sutra():
         font-size: 18px;
         line-height: 1.6;
     }
-    .diamond-sutra ol {
-        list-style-type: decimal;
-        padding-left: 20px;
-    }
-    .diamond-sutra li {
+    .diamond-sutra .sutra-item {
         margin-bottom: 20px;
     }
-    .diamond-sutra .main-point {
+    .diamond-sutra .quote {
         font-size: 24px;
         font-weight: bold;
         margin-bottom: 10px;
+        border-bottom: 2px solid #FFD700;
+        padding-bottom: 5px;
     }
     .diamond-sutra .explanation {
         font-size: 18px;
+        padding-left: 20px;
     }
     </style>
     """, unsafe_allow_html=True)

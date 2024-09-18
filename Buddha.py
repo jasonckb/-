@@ -114,37 +114,46 @@ def format_translation_content(content):
     formatted_content = []
     lines = content.splitlines()
     chapter = ""
-    current_quote = ""
-    current_explanation = ""
+    current_content = ""
+    is_explanation = False
     
     for line in lines:
         if line.startswith("###"):  # Chapter header
             if chapter:  # Add previous chapter if exists
                 formatted_content.append(chapter)
             chapter = f"<h3>{line[3:].strip()}</h3>"  # Format chapter header
+            current_content = ""
+            is_explanation = False
         elif line.startswith("##"):  # Original quote
-            if current_quote:  # Add previous quote and explanation if exists
-                chapter += f"{current_quote}{current_explanation}"
-            current_quote = f"<p><strong>{line[2:].strip()}</strong></p>"
-            current_explanation = ""
-        elif line.startswith("---"):  # Explanation
-            current_explanation += f"<p>{line[3:].strip()}</p>"
-        elif line.strip() == "":  # Blank line means end of quote
-            if current_quote:  # Add current quote and explanation
-                chapter += f"{current_quote}{current_explanation}"
-                current_quote = ""
-                current_explanation = ""
+            if current_content:
+                chapter += current_content
+            current_content = f"<p><strong>{line[2:].strip()}</strong></p>"
+            is_explanation = False
+        elif line.startswith("---"):  # Start of explanation
+            is_explanation = True
+            current_content += "<p>"
+        elif line.strip() == "":  # Blank line
+            if is_explanation:
+                current_content += "</p>"
+                chapter += current_content
+                current_content = ""
+                is_explanation = False
+        else:  # Content line
+            if is_explanation:
+                current_content += line + " "
+            else:
+                current_content += f"<p>{line}</p>"
     
-    # Add last quote and chapter if exists
-    if current_quote:
-        chapter += f"{current_quote}{current_explanation}"
+    # Add last content and chapter if exists
+    if current_content:
+        if is_explanation:
+            current_content += "</p>"
+        chapter += current_content
     if chapter:
         formatted_content.append(chapter)
     
     # Join chapters with exactly two line breaks
     return "<br><br>".join(formatted_content)
-
-
 def display_hui_xiang_ji():
     url = "https://github.com/jasonckb/Buddha/raw/main/%E5%9B%9E%E5%90%91%E5%81%88.docx"
     content = fetch_docx_content(url)

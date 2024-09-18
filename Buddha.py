@@ -146,36 +146,6 @@ def display_great_compassion_mantra():
     st.write("影片來源：")
     st.markdown("[大悲咒 - YouTube](https://www.youtube.com/watch?v=Hr9zmoDWppA)")
 
-def display_phowa_practice():
-    st.header("三想破瓦法")
-    
-    # Display image
-    image_url = "https://github.com/jasonckb/Buddha/raw/main/%E4%B8%89%E6%83%B3%E7%A0%B4%E7%93%A6%E6%B3%95.jpg"
-    response = requests.get(image_url)
-    img = Image.open(io.BytesIO(response.content))
-    st.image(img, use_column_width=True)
-    
-    # Display content from docx file
-    url = "https://github.com/jasonckb/Buddha/raw/main/%E4%B8%89%E6%83%B3%E7%A0%B4%E7%93%A6%E6%B3%95.docx"
-    content = fetch_docx_content(url)
-    st.markdown(f'<div class="large-content">{content}</div>', unsafe_allow_html=True)
-    
-    # Display source
-    st.write("文字來源：")
-    st.markdown("[三想破瓦法 - 佛教在線](http://read.goodweb.net.cn/news/news_view.asp?newsid=74024)")
-    
-    # Display video
-    st.write("破瓦法影片：")
-    st.markdown("""
-    <div class="video-container">
-        <iframe src="https://www.youtube.com/embed/wDVoBVC5s2c?start=536&end=2375" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    # Display video source
-    st.write("影片來源：")
-    st.markdown("[破瓦法 - YouTube](https://www.youtube.com/watch?v=wDVoBVC5s2c&t=1072s)")
-
 def display_diamond_sutra():
     st.header("金剛經")
     
@@ -201,11 +171,16 @@ def display_diamond_sutra():
                 st.subheader(chapter_parts[0].strip())  # Chapter title
                 content = chapter_parts[1].strip()
                 
-                quotes = content.split('\n\n')
-                for quote in quotes:
-                    parts = quote.split('---')
-                    if len(parts) == 2:
-                        st.markdown(f"**{parts[0].strip()[2:]}**")  # Remove '##' and display as bold
-                        st.write(parts[1].strip())
+                paragraphs = content.split('\n\n')
+                for paragraph in paragraphs:
+                    if paragraph.startswith('##'):
+                        # Original quote
+                        st.markdown(f"**{paragraph[2:].strip()}**")
+                    elif paragraph.startswith('---'):
+                        # Explanation
+                        st.write(paragraph[3:].strip())
+                    else:
+                        # Other content (if any)
+                        st.write(paragraph.strip())
 if __name__ == "__main__":
     main()

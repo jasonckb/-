@@ -77,19 +77,28 @@ def main():
     if st.sidebar.button("金剛經"):
         display_diamond_sutra()
 
-def fetch_docx_content(url):
+def fetch_docx_content(url, convert=False):
     try:
+        st.write(f"Fetching content from: {url}")
         response = requests.get(url)
         response.raise_for_status()  # Raise an exception for bad status codes
         doc = Document(io.BytesIO(response.content))
         full_text = []
         for para in doc.paragraphs:
-            full_text.append(cc.convert(para.text))  # Convert to traditional Chinese
-        return '\n'.join(full_text)
+            text = para.text
+            if convert:
+                text = cc.convert(text)  # Convert to traditional Chinese if needed
+            full_text.append(text)
+        content = '\n'.join(full_text)
+        st.write(f"Fetched content (first 100 characters): {content[:100]}...")
+        return content
     except requests.exceptions.RequestException as e:
-        return cc.convert(f"無法獲取文件內容。錯誤：{str(e)}")
+        st.error(f"無法獲取文件內容。錯誤：{str(e)}")
+        return ""
     except Exception as e:
-        return cc.convert(f"處理文件時出錯。錯誤：{str(e)}")
+        st.error(f"處理文件時出錯。錯誤：{str(e)}")
+        return ""
+
 
 def display_hui_xiang_ji():
     url = "https://github.com/jasonckb/Buddha/raw/main/%E5%9B%9E%E5%90%91%E5%81%88.docx"
@@ -197,10 +206,12 @@ def display_diamond_sutra():
     url = "https://github.com/jasonckb/Buddha/raw/main/%E9%87%91%E5%89%9B%E7%B6%93%E7%B2%BE%E5%8F%A5.docx"
     content = fetch_docx_content(url)
     
-    # Process and format the content
-    formatted_content = process_diamond_sutra_content(content)
-    
-    st.markdown(formatted_content, unsafe_allow_html=True)
+    if content:
+        # Process and format the content
+        formatted_content = process_diamond_sutra_content(content)
+        st.markdown(formatted_content, unsafe_allow_html=True)
+    else:
+        st.error("無法顯示金剛經內容。請檢查網絡連接或文件鏈接。")
     
     # Button for 經文及翻譯
     if st.button("經文及翻譯"):
@@ -232,13 +243,20 @@ def process_diamond_sutra_content(content):
         formatted_content += f'<div class="explanation">{current_explanation}</div></li>'
     
     formatted_content += '</ol></div>'
+    st.write(f"Formatted content (first 100 characters): {formatted_content[:100]}...")
     return formatted_content
 
 def display_diamond_sutra_translation():
+    st.header("金剛經經文及翻譯")
+    
     # Display content from 金剛經原典與白話譯釋.docx file
     url = "https://github.com/jasonckb/Buddha/raw/main/%E9%87%91%E5%89%9B%E7%B6%93%E5%8E%9F%E5%85%B8%E8%88%87%E7%99%BD%E8%A9%B1%E8%AD%AF%E9%87%8B.docx"
     content = fetch_docx_content(url)
-    st.markdown(f'<div class="large-content">{content}</div>', unsafe_allow_html=True)
+    
+    if content:
+        st.markdown(f'<div class="large-content">{content}</div>', unsafe_allow_html=True)
+    else:
+        st.error("無法顯示金剛經經文及翻譯。請檢查網絡連接或文件鏈接。")
 
 if __name__ == "__main__":
     main()

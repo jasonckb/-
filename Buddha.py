@@ -100,6 +100,16 @@ def fetch_text_content(url):
         st.error(f"無法獲取文件內容。錯誤：{str(e)}")
         return None
 
+def fetch_translation_content(url):
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        content = response.text
+        return format_translation_content(content)
+    except requests.exceptions.RequestException as e:
+        st.error(f"無法獲取翻譯內容。錯誤：{str(e)}")
+        return None
+
 def display_hui_xiang_ji():
     url = "https://github.com/jasonckb/Buddha/raw/main/%E5%9B%9E%E5%90%91%E5%81%88.docx"
     content = fetch_docx_content(url)
@@ -179,18 +189,22 @@ def display_diamond_sutra():
     content = fetch_text_content(url)
     
     st.header("金剛經")
-    st.markdown(content, unsafe_allow_html=True)
+    
+    if content:
+        st.markdown(content, unsafe_allow_html=True)
+    else:
+        st.error("無法獲取金剛經內容。")
     
     # Checkbox for 經文及翻譯
     if st.checkbox("經文及翻譯"):
         translation_url = "https://raw.githubusercontent.com/jasonckb/Buddha/main/%E9%87%91%E5%89%9B%E7%B6%93%E5%8E%9F%E5%85%B8%E8%88%87%E7%99%BD%E8%A9%B1%E8%AD%AF%E9%87%8B.txt"
-        translation_content = fetch_text_content(translation_url)
+        translation_content = fetch_translation_content(translation_url)
+        
         if translation_content:
-            formatted_translation = format_translation_content(translation_content)
-            st.markdown(formatted_translation, unsafe_allow_html=True)
+            st.markdown(translation_content, unsafe_allow_html=True)
         else:
             st.error("無法獲取經文及翻譯內容。")
-
+            
 def format_translation_content(content):
     formatted_content = []
     lines = content.splitlines()
@@ -212,8 +226,5 @@ def format_translation_content(content):
         formatted_content.append(chapter)
     
     return "\n".join(formatted_content)
-
-
-
 if __name__ == "__main__":
     main()

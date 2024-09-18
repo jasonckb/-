@@ -174,6 +174,38 @@ def display_phowa_practice():
     st.write("影片來源：")
     st.markdown("[破瓦法 - YouTube](https://www.youtube.com/watch?v=wDVoBVC5s2c&t=1072s)")
 
+def process_diamond_sutra_content(content):
+    lines = content.split('\n')
+    formatted_content = '<div class="diamond-sutra"><ol>'
+    current_point = ""
+    current_explanation = ""
+    in_explanation = False
+
+    for line in lines:
+        line = line.strip()
+        if line.startswith(('1.', '2.', '3.', '4.', '5.')):
+            if current_point:
+                formatted_content += f'<li><div class="main-point">{current_point}</div>'
+                formatted_content += f'<div class="explanation">{current_explanation}</div></li>'
+            current_point = line
+            current_explanation = ""
+            in_explanation = False
+        elif line:
+            if not in_explanation and current_point:
+                in_explanation = True
+            if in_explanation:
+                current_explanation += line + "<br>"
+            else:
+                current_point += " " + line
+
+    # Add the last point
+    if current_point:
+        formatted_content += f'<li><div class="main-point">{current_point}</div>'
+        formatted_content += f'<div class="explanation">{current_explanation}</div></li>'
+
+    formatted_content += '</ol></div>'
+    return formatted_content
+
 def display_diamond_sutra():
     st.header("金剛經精句")
     
@@ -220,43 +252,6 @@ def display_diamond_sutra():
     # Display source
     st.write("來源：")
     st.markdown("[金剛經 - 星雲大師著作全集](https://books.masterhsingyun.org/ArticleDetail/artcle335)")
-
-def process_diamond_sutra_content(content):
-    lines = content.split('\n')
-    formatted_content = '<div class="diamond-sutra"><ol>'
-    current_point = ""
-    current_explanation = ""
-    for line in lines:
-        line = line.strip()
-        if line.startswith(('1.', '2.', '3.', '4.', '5.')):
-            if current_point:
-                formatted_content += f'<li><div class="main-point">{current_point}</div>'
-                formatted_content += f'<div class="explanation">{current_explanation}</div></li>'
-            current_point = line
-            current_explanation = ""
-        elif line:
-            current_explanation += line + "<br>"
-    
-    # Add the last point
-    if current_point:
-        formatted_content += f'<li><div class="main-point">{current_point}</div>'
-        formatted_content += f'<div class="explanation">{current_explanation}</div></li>'
-    
-    formatted_content += '</ol></div>'
-    st.write(f"Formatted content (first 100 characters): {formatted_content[:100]}...")
-    return formatted_content
-
-def display_diamond_sutra_translation():
-    st.header("金剛經經文及翻譯")
-    
-    # Display content from 金剛經原典與白話譯釋.docx file
-    url = "https://github.com/jasonckb/Buddha/raw/main/%E9%87%91%E5%89%9B%E7%B6%93%E5%8E%9F%E5%85%B8%E8%88%87%E7%99%BD%E8%A9%B1%E8%AD%AF%E9%87%8B.docx"
-    content = fetch_docx_content(url)
-    
-    if content:
-        st.markdown(f'<div class="large-content">{content}</div>', unsafe_allow_html=True)
-    else:
-        st.error("無法顯示金剛經經文及翻譯。請檢查網絡連接或文件鏈接。")
 
 if __name__ == "__main__":
     main()

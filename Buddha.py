@@ -115,6 +115,7 @@ def format_translation_content(content):
     lines = content.splitlines()
     chapter = ""
     current_quote = ""
+    current_explanation = ""
     
     for line in lines:
         if line.startswith("###"):  # Chapter header
@@ -123,18 +124,20 @@ def format_translation_content(content):
             chapter = f"<h3>{line[3:].strip()}</h3>"  # Format chapter header
         elif line.startswith("##"):  # Original quote
             if current_quote:  # Add previous quote and explanation if exists
-                chapter += current_quote
+                chapter += f"{current_quote}{current_explanation}"
             current_quote = f"<p><strong>{line[2:].strip()}</strong></p>"
+            current_explanation = ""
         elif line.startswith("---"):  # Explanation
-            current_quote += f"<p>{line[3:].strip()}</p>"
+            current_explanation += f"<p>{line[3:].strip()}</p>"
         elif line.strip() == "":  # Blank line means end of quote
             if current_quote:  # Add current quote and explanation
-                chapter += current_quote
+                chapter += f"{current_quote}{current_explanation}"
                 current_quote = ""
+                current_explanation = ""
     
     # Add last quote and chapter if exists
     if current_quote:
-        chapter += current_quote
+        chapter += f"{current_quote}{current_explanation}"
     if chapter:
         formatted_content.append(chapter)
     

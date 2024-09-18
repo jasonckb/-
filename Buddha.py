@@ -3,9 +3,11 @@ import requests
 import io
 from docx import Document
 from PIL import Image
+from opencc import OpenCC
 
 st.set_page_config(page_title="佛法修行", layout="wide")
 
+# Initialize OpenCC converter
 cc = OpenCC('s2t')  # Simplified to Traditional
 
 # Custom CSS for the golden yellow text, responsive video, and larger content text
@@ -77,12 +79,12 @@ def fetch_docx_content(url):
         doc = Document(io.BytesIO(response.content))
         full_text = []
         for para in doc.paragraphs:
-            full_text.append(para.text)
+            full_text.append(cc.convert(para.text))  # Convert to traditional Chinese
         return '\n'.join(full_text)
     except requests.exceptions.RequestException as e:
-        return f"無法獲取文件內容。錯誤：{str(e)}"
+        return cc.convert(f"無法獲取文件內容。錯誤：{str(e)}")
     except Exception as e:
-        return f"處理文件時出錯。錯誤：{str(e)}"
+        return cc.convert(f"處理文件時出錯。錯誤：{str(e)}")
 
 def display_hui_xiang_ji():
     url = "https://github.com/jasonckb/Buddha/raw/main/%E5%9B%9E%E5%90%91%E5%81%88.docx"
@@ -144,7 +146,7 @@ def display_phowa_practice():
     
     # Display source
     st.write("文字來源：")
-    st.markdown("[三想破瓦法 - 佛教在线](http://read.goodweb.net.cn/news/news_view.asp?newsid=74024)")
+    st.markdown("[三想破瓦法 - 佛教在線](http://read.goodweb.net.cn/news/news_view.asp?newsid=74024)")
     
     # Display video
     st.write("破瓦法影片：")

@@ -71,6 +71,11 @@ def main():
     st.sidebar.header("三想破瓦法")
     if st.sidebar.button("破瓦法"):
         display_phowa_practice()
+    
+    # 佛經 section
+    st.sidebar.header("佛經")
+    if st.sidebar.button("金剛經"):
+        display_diamond_sutra()
 
 def fetch_docx_content(url):
     try:
@@ -159,6 +164,28 @@ def display_phowa_practice():
     # Display video source
     st.write("影片來源：")
     st.markdown("[破瓦法 - YouTube](https://www.youtube.com/watch?v=wDVoBVC5s2c&t=1072s)")
+
+def display_diamond_sutra():
+    st.header("金剛經")
+    
+    # Display content from 金剛經精句.docx file
+    url = "https://github.com/jasonckb/Buddha/raw/main/%E9%87%91%E5%89%9B%E7%B6%93%E7%B2%BE%E5%8F%A5.docx"
+    content = fetch_docx_content(url)
+    st.markdown(f'<div class="large-content">{content}</div>', unsafe_allow_html=True)
+    
+    # Button for 經文及翻譯
+    if st.button("經文及翻譯"):
+        display_diamond_sutra_translation()
+    
+    # Display source
+    st.write("來源：")
+    st.markdown("[金剛經 - 星雲大師著作全集](https://books.masterhsingyun.org/ArticleDetail/artcle335)")
+
+def display_diamond_sutra_translation():
+    # Display content from 金剛經原典與白話譯釋.docx file
+    url = "https://github.com/jasonckb/Buddha/raw/main/%E9%87%91%E5%89%9B%E7%B6%93%E5%8E%9F%E5%85%B8%E8%88%87%E7%99%BD%E8%A9%B1%E8%AD%AF%E9%87%8B.docx"
+    content = fetch_docx_content(url)
+    st.markdown(f'<div class="large-content">{content}</div>', unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()

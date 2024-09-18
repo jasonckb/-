@@ -2,6 +2,7 @@ import streamlit as st
 import requests
 import io
 from docx import Document
+from PIL import Image
 
 st.set_page_config(page_title="佛法修行", layout="wide")
 

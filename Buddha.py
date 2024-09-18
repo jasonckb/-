@@ -91,6 +91,15 @@ def fetch_docx_content(url):
     except Exception as e:
         return cc.convert(f"處理文件時出錯。錯誤：{str(e)}")
 
+def fetch_text_content(url):
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        return response.text
+    except requests.exceptions.RequestException as e:
+        st.error(f"無法獲取文件內容。錯誤：{str(e)}")
+        return None
+
 def format_translation_content(content):
     formatted_content = []
     lines = content.splitlines()

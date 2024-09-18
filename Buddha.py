@@ -179,7 +179,7 @@ def process_diamond_sutra_content(content):
     formatted_content = '<div class="diamond-sutra">'
     current_quote = ""
     current_explanation = ""
-    in_quote = False
+    in_quote = True
 
     for line in lines:
         line = line.strip()
@@ -192,10 +192,11 @@ def process_diamond_sutra_content(content):
         elif line:
             if in_quote:
                 current_quote += " " + line
+                in_quote = False
             else:
                 current_explanation += line + "<br>"
         else:
-            in_quote = False
+            in_quote = True
 
     # Add the last quote and explanation
     if current_quote or current_explanation:
@@ -205,7 +206,7 @@ def process_diamond_sutra_content(content):
     return formatted_content
 
 def format_quote_and_explanation(quote, explanation):
-    formatted = f'<div class="sutra-item">'
+    formatted = '<div class="sutra-item">'
     formatted += f'<div class="quote">{quote}</div>'
     if explanation:
         formatted += f'<div class="explanation">{explanation}</div>'
@@ -223,18 +224,18 @@ def display_diamond_sutra():
         line-height: 1.6;
     }
     .diamond-sutra .sutra-item {
-        margin-bottom: 20px;
+        margin-bottom: 30px;
     }
     .diamond-sutra .quote {
-        font-size: 24px;
+        font-size: 22px;
         font-weight: bold;
         margin-bottom: 10px;
-        border-bottom: 2px solid #FFD700;
-        padding-bottom: 5px;
+        text-decoration: underline;
+        text-underline-offset: 5px;
     }
     .diamond-sutra .explanation {
         font-size: 18px;
-        padding-left: 20px;
+        margin-top: 10px;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -257,6 +258,7 @@ def display_diamond_sutra():
     # Display source
     st.write("來源：")
     st.markdown("[金剛經 - 星雲大師著作全集](https://books.masterhsingyun.org/ArticleDetail/artcle335)")
+
 
 if __name__ == "__main__":
     main()

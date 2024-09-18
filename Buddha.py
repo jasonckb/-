@@ -174,6 +174,36 @@ def display_phowa_practice():
     st.write("影片來源：")
     st.markdown("[破瓦法 - YouTube](https://www.youtube.com/watch?v=wDVoBVC5s2c&t=1072s)")
 
+# Diamond Sutra Functions
+def parse_diamond_sutra_content(content):
+    if not content:
+        return []
+    sections = content.split('##')[1:]
+    parsed_content = []
+    for section in sections:
+        parts = section.split('---')
+        if len(parts) == 2:
+            quote = parts[0].strip()
+            explanation = parts[1].strip()
+            parsed_content.append((quote, explanation))
+    return parsed_content
+
+def parse_diamond_sutra_translation(content):
+    if not content:
+        return []
+    chapters = content.split('###')[1:]
+    parsed_content = []
+    for chapter in chapters:
+        chapter_parts = chapter.strip().split('\n\n')
+        chapter_title = chapter_parts[0].strip()
+        sections = []
+        for part in chapter_parts[1:]:
+            if part.startswith('##'):
+                quote, explanation = part.split('---')
+                sections.append((quote.replace('##', '').strip(), explanation.strip()))
+        parsed_content.append((chapter_title, sections))
+    return parsed_content
+
 def display_diamond_sutra():
     st.header("金剛經精句")
     
@@ -181,11 +211,14 @@ def display_diamond_sutra():
     content = fetch_txt_content(url)
     
     if content:
-        parsed_content = parse_diamond_sutra_content(content)
-        for quote, explanation in parsed_content:
-            st.markdown(f"**{quote}**")
-            st.write(explanation)
-            st.write("---")
+        try:
+            parsed_content = parse_diamond_sutra_content(content)
+            for quote, explanation in parsed_content:
+                st.markdown(f"**{quote}**")
+                st.write(explanation)
+                st.write("---")
+        except Exception as e:
+            st.error(f"Error parsing content: {str(e)}")
     else:
         st.error("無法顯示金剛經內容。請檢查網絡連接或文件鏈接。")
     
@@ -200,13 +233,16 @@ def display_diamond_sutra_translation():
     content = fetch_txt_content(url)
     
     if content:
-        parsed_content = parse_diamond_sutra_translation(content)
-        for chapter_title, sections in parsed_content:
-            st.subheader(chapter_title)
-            for quote, explanation in sections:
-                st.markdown(f"**{quote}**")
-                st.write(explanation)
-                st.write("---")
+        try:
+            parsed_content = parse_diamond_sutra_translation(content)
+            for chapter_title, sections in parsed_content:
+                st.subheader(chapter_title)
+                for quote, explanation in sections:
+                    st.markdown(f"**{quote}**")
+                    st.write(explanation)
+                    st.write("---")
+        except Exception as e:
+            st.error(f"Error parsing content: {str(e)}")
     else:
         st.error("無法顯示金剛經經文及翻譯。請檢查網絡連接或文件鏈接。")
 

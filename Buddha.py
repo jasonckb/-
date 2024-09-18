@@ -73,8 +73,13 @@ def display_medicine_buddha_mantra():
     st.header("藥師咒")
     st.write(content)
     
-    if st.button("Play Video"):
-        st.video("https://github.com/jasonckb/Buddha/raw/main/Mantra%20of%20Medicine%20Buddha.mp4")
+    if st.button("播放視頻"):
+        try:
+            video_url = "https://github.com/jasonckb/Buddha/raw/main/Mantra%20of%20Medicine%20Buddha.mp4"
+            st.video(video_url)
+        except Exception as e:
+            st.error(f"無法播放視頻。錯誤：{str(e)}")
+            st.markdown("如果視頻無法播放，請[點擊此處](https://www.youtube.com/watch?v=5UnbgjkbgUI&t=1218s)在YouTube上觀看。")
     
     st.write("影片來源：")
     st.markdown("[藥師咒 - YouTube](https://www.youtube.com/watch?v=5UnbgjkbgUI&t=1218s)")

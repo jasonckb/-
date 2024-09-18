@@ -53,14 +53,8 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 def main():
-    st.title("佛法修行")
-
-    if 'show_translation' not in st.session_state:
-        st.session_state.show_translation = False
-
     # Sidebar
     st.sidebar.title("修行內容")
-    
     # 迴向 section
     st.sidebar.header("迴向")
     if st.sidebar.button("迴向偈"):
@@ -81,15 +75,7 @@ def main():
     # 佛經 section
     st.sidebar.header("佛經")
     if st.sidebar.button("金剛經"):
-        st.session_state.show_translation = False
         display_diamond_sutra()
-
-    if st.session_state.show_translation:
-        display_diamond_sutra_translation()
-
-    # Debug information
-    st.sidebar.write("Debug Info:")
-    st.sidebar.write(f"show_translation: {st.session_state.show_translation}")
 
 def fetch_txt_content(url):
     try:
@@ -174,6 +160,31 @@ def display_phowa_practice():
     st.write("影片來源：")
     st.markdown("[破瓦法 - YouTube](https://www.youtube.com/watch?v=wDVoBVC5s2c&t=1072s)")
 
+def parse_diamond_sutra_content(content):
+    sections = content.split('##')[1:]  # Split by '##' and remove the first empty element
+    parsed_content = []
+    for section in sections:
+        parts = section.split('---')
+        if len(parts) == 2:
+            quote = parts[0].strip()
+            explanation = parts[1].strip()
+            parsed_content.append((quote, explanation))
+    return parsed_content
+
+def parse_diamond_sutra_translation(content):
+    chapters = content.split('###')[1:]  # Split by '###' and remove the first empty element
+    parsed_content = []
+    for chapter in chapters:
+        chapter_parts = chapter.strip().split('\n\n')
+        chapter_title = chapter_parts[0].strip()
+        sections = []
+        for part in chapter_parts[1:]:
+            if part.startswith('##'):
+                quote, explanation = part.split('---')
+                sections.append((quote.replace('##', '').strip(), explanation.strip()))
+        parsed_content.append((chapter_title, sections))
+    return parsed_content
+
 def display_diamond_sutra():
     st.header("金剛經精句")
     
@@ -189,9 +200,8 @@ def display_diamond_sutra():
     else:
         st.error("無法顯示金剛經內容。請檢查網絡連接或文件鏈接。")
     
-    if st.button("經文及翻譯", key="translation_button"):
-        st.session_state.show_translation = True
-        st.experimental_rerun()
+    if st.button("經文及翻譯"):
+        display_diamond_sutra_translation()
 
 def display_diamond_sutra_translation():
     st.header("金剛經經文及翻譯")

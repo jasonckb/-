@@ -171,10 +171,23 @@ def parse_diamond_sutra_content(content):
             parsed_content.append((quote, explanation))
     return parsed_content
 
+def parse_diamond_sutra_translation(content):
+    chapters = content.split('###')[1:]  # Split by '###' and remove the first empty element
+    parsed_content = []
+    for chapter in chapters:
+        chapter_parts = chapter.strip().split('\n\n')
+        chapter_title = chapter_parts[0].strip()
+        sections = []
+        for part in chapter_parts[1:]:
+            if part.startswith('##'):
+                quote, explanation = part.split('---')
+                sections.append((quote.replace('##', '').strip(), explanation.strip()))
+        parsed_content.append((chapter_title, sections))
+    return parsed_content
+
 def display_diamond_sutra():
     st.header("金剛經精句")
     
-    # Updated URL to fetch raw content
     url = "https://raw.githubusercontent.com/jasonckb/Buddha/main/%E9%87%91%E5%89%9B%E7%B6%93%E7%B2%BE%E5%8F%A5.txt"
     content = fetch_txt_content(url)
     
@@ -193,12 +206,17 @@ def display_diamond_sutra():
 def display_diamond_sutra_translation():
     st.header("金剛經經文及翻譯")
     
-    # You'll need to update this URL as well if you have a translation file
     url = "https://raw.githubusercontent.com/jasonckb/Buddha/main/%E9%87%91%E5%89%9B%E7%B6%93%E5%8E%9F%E5%85%B8%E8%88%87%E7%99%BD%E8%A9%B1%E8%AD%AF%E9%87%8B.txt"
     content = fetch_txt_content(url)
     
     if content:
-        st.write(content)
+        parsed_content = parse_diamond_sutra_translation(content)
+        for chapter_title, sections in parsed_content:
+            st.subheader(chapter_title)
+            for quote, explanation in sections:
+                st.markdown(f"**{quote}**")
+                st.write(explanation)
+                st.write("---")
     else:
         st.error("無法顯示金剛經經文及翻譯。請檢查網絡連接或文件鏈接。")
 

@@ -149,38 +149,51 @@ def display_great_compassion_mantra():
 def display_diamond_sutra():
     st.header("金剛經")
     
-    # Fetch and display content for 金剛經精句
-    url_quotes = "https://raw.githubusercontent.com/jasonckb/Buddha/main/%E9%87%91%E5%89%9B%E7%B6%93%E7%B2%BE%E5%8F%A5.txt"
-    content_quotes = fetch_txt_content(url_quotes)
-    
-    for quote in content_quotes.split('\n\n'):
-        parts = quote.split('---')
-        if len(parts) == 2:
-            st.markdown(f"**{parts[0].strip()[2:]}**")  # Remove '##' and display as bold
-            st.write(parts[1].strip())
-    
-    # Checkbox for full content
-    if st.checkbox("經文及翻譯"):
-        url_full = "https://raw.githubusercontent.com/jasonckb/Buddha/main/%E9%87%91%E5%89%9B%E7%B6%93%E5%8E%9F%E5%85%B8%E8%88%87%E7%99%BD%E8%A9%B1%E8%AD%AF%E9%87%8B.txt"
-        content_full = fetch_txt_content(url_full)
+    try:
+        # Fetch and display content for 金剛經精句
+        url_quotes = "https://raw.githubusercontent.com/jasonckb/Buddha/main/%E9%87%91%E5%89%9B%E7%B6%93%E7%B2%BE%E5%8F%A5.txt"
+        content_quotes = fetch_txt_content(url_quotes)
         
-        chapters = content_full.split('###')[1:]  # Split by chapters, ignore the first empty part
-        for chapter in chapters:
-            chapter_parts = chapter.strip().split('\n', 1)
-            if len(chapter_parts) == 2:
-                st.subheader(chapter_parts[0].strip())  # Chapter title
-                content = chapter_parts[1].strip()
-                
-                paragraphs = content.split('\n\n')
-                for paragraph in paragraphs:
-                    if paragraph.startswith('##'):
-                        # Original quote
-                        st.markdown(f"**{paragraph[2:].strip()}**")
-                    elif paragraph.startswith('---'):
-                        # Explanation
-                        st.write(paragraph[3:].strip())
-                    else:
-                        # Other content (if any)
-                        st.write(paragraph.strip())
+        for quote in content_quotes.split('\n\n'):
+            parts = quote.split('---')
+            if len(parts) == 2:
+                st.markdown(f"**{parts[0].strip()[2:]}**")  # Remove '##' and display as bold
+                st.write(parts[1].strip())
+        
+        # Checkbox for full content
+        if st.checkbox("經文及翻譯"):
+            st.write("Checkbox checked. Fetching full content...")
+            url_full = "https://raw.githubusercontent.com/jasonckb/Buddha/main/%E9%87%91%E5%89%9B%E7%B6%93%E5%8E%9F%E5%85%B8%E8%88%87%E7%99%BD%E8%A9%B1%E8%AD%AF%E9%87%8B.txt"
+            content_full = fetch_txt_content(url_full)
+            st.write(f"Full content fetched. Length: {len(content_full)} characters")
+            
+            chapters = content_full.split('###')[1:]  # Split by chapters, ignore the first empty part
+            st.write(f"Number of chapters: {len(chapters)}")
+            
+            for i, chapter in enumerate(chapters):
+                st.write(f"Processing chapter {i+1}")
+                chapter_parts = chapter.strip().split('\n', 1)
+                if len(chapter_parts) == 2:
+                    st.subheader(chapter_parts[0].strip())  # Chapter title
+                    content = chapter_parts[1].strip()
+                    
+                    paragraphs = content.split('\n\n')
+                    st.write(f"Number of paragraphs in chapter {i+1}: {len(paragraphs)}")
+                    
+                    for paragraph in paragraphs:
+                        if paragraph.startswith('##'):
+                            st.markdown(f"**{paragraph[2:].strip()}**")
+                        elif paragraph.startswith('---'):
+                            st.write(paragraph[3:].strip())
+                        else:
+                            st.write(paragraph.strip())
+                else:
+                    st.write(f"Chapter {i+1} doesn't have the expected format")
+            
+            st.write("Finished processing all chapters")
+    except Exception as e:
+        st.error(f"An error occurred: {str(e)}")
+        st.write("Traceback:")
+        st.code(traceback.format_exc())
 if __name__ == "__main__":
     main()

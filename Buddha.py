@@ -91,24 +91,16 @@ def fetch_docx_content(url):
     except Exception as e:
         return cc.convert(f"處理文件時出錯。錯誤：{str(e)}")
 
-def fetch_text_content(url):
-    try:
-        response = requests.get(url)
-        response.raise_for_status()
-        return response.text
-    except requests.exceptions.RequestException as e:
-        st.error(f"無法獲取文件內容。錯誤：{str(e)}")
-        return None
-
-def fetch_translation_content(url):
+def fetch_txt_content(url):
     try:
         response = requests.get(url)
         response.raise_for_status()
         content = response.text
-        return format_translation_content(content)
+        return cc.convert(content)  # Convert to traditional Chinese
     except requests.exceptions.RequestException as e:
-        st.error(f"無法獲取翻譯內容。錯誤：{str(e)}")
-        return None
+        return cc.convert(f"無法獲取文件內容。錯誤：{str(e)}")
+    except Exception as e:
+        return cc.convert(f"處理文件時出錯。錯誤：{str(e)}")
 
 def display_hui_xiang_ji():
     url = "https://github.com/jasonckb/Buddha/raw/main/%E5%9B%9E%E5%90%91%E5%81%88.docx"
@@ -185,68 +177,35 @@ def display_phowa_practice():
     st.markdown("[破瓦法 - YouTube](https://www.youtube.com/watch?v=wDVoBVC5s2c&t=1072s)")
 
 def display_diamond_sutra():
-    # Fetch the original text content
-    url = "https://raw.githubusercontent.com/jasonckb/Buddha/main/%E9%87%91%E5%89%9B%E7%B6%93%E7%B2%BE%E5%8F%A5.txt"
-    content = fetch_text_content(url)
-    
     st.header("金剛經")
     
-    if content:
-        st.markdown(content, unsafe_allow_html=True)
-    else:
-        st.error("無法獲取金剛經內容。")
+    # Fetch and display content for 金剛經精句
+    url_quotes = "https://raw.githubusercontent.com/jasonckb/Buddha/main/%E9%87%91%E5%89%9B%E7%B6%93%E7%B2%BE%E5%8F%A5.txt"
+    content_quotes = fetch_txt_content(url_quotes)
     
-    # Checkbox for 經文及翻譯
-    show_translation = st.checkbox("經文及翻譯")
+    for quote in content_quotes.split('\n\n'):
+        parts = quote.split('---')
+        if len(parts) == 2:
+            st.markdown(f"**{parts[0].strip()[2:]}**")  # Remove '##' and display as bold
+            st.write(parts[1].strip())
     
-    if show_translation:
-        translation_url = "https://raw.githubusercontent.com/jasonckb/Buddha/main/%E9%87%91%E5%89%9B%E7%B6%93%E5%8E%9F%E5%85%B8%E8%88%87%E7%99%BD%E8%A9%B1%E8%AD%AF%E9%87%8B.txt"
-        translation_content = fetch_translation_content(translation_url)
+    # Checkbox for full content
+    if st.checkbox("經文及翻譯"):
+        url_full = "https://raw.githubusercontent.com/jasonckb/Buddha/main/%E9%87%91%E5%89%9B%E7%B6%93%E5%8E%9F%E5%85%B8%E8%88%87%E7%99%BD%E8%A9%B1%E8%AD%AF%E9%87%8B.txt"
+        content_full = fetch_txt_content(url_full)
         
-        if translation_content:
-            st.markdown(translation_content, unsafe_allow_html=True)
-        else:
-            st.error("無法獲取經文及翻譯內容。")
-            
-def fetch_text_content(url):
-    try:
-        response = requests.get(url)
-        response.raise_for_status()
-        return response.text
-    except requests.exceptions.RequestException as e:
-        st.error(f"無法獲取文件內容。錯誤：{str(e)}")
-        return None
-
-def fetch_translation_content(url):
-    try:
-        response = requests.get(url)
-        response.raise_for_status()
-        content = response.text
-        return format_translation_content(content)
-    except requests.exceptions.RequestException as e:
-        st.error(f"無法獲取翻譯內容。錯誤：{str(e)}")
-        return None
-
-def format_translation_content(content):
-    formatted_content = []
-    lines = content.splitlines()
-    chapter = ""
-    
-    for line in lines:
-        if line.startswith("###"):  # Chapter header
-            if chapter:  # Add previous chapter if exists
-                formatted_content.append(chapter)
-            chapter = f"<h3>{line[3:].strip()}</h3>"  # Format chapter header
-        elif line.startswith("##"):  # Original quote
-            formatted_content.append(f"<p><strong>{line[2:].strip()}</strong></p>")
-        elif line.startswith("---"):  # Explanation
-            formatted_content.append(f"<p>{line[3:].strip()}</p>")
-        elif line.strip() == "":  # Blank line means end of quote
-            formatted_content.append("<br>")
-    
-    if chapter:  # Add last chapter if exists
-        formatted_content.append(chapter)
-    
-    return "\n".join(formatted_content)
+        chapters = content_full.split('###')[1:]  # Split by chapters, ignore the first empty part
+        for chapter in chapters:
+            chapter_parts = chapter.strip().split('\n', 1)
+            if len(chapter_parts) == 2:
+                st.subheader(chapter_parts[0].strip())  # Chapter title
+                content = chapter_parts[1].strip()
+                
+                quotes = content.split('\n\n')
+                for quote in quotes:
+                    parts = quote.split('---')
+                    if len(parts) == 2:
+                        st.markdown(f"**{parts[0].strip()[2:]}**")  # Remove '##' and display as bold
+                        st.write(parts[1].strip())
 if __name__ == "__main__":
     main()

@@ -1,30 +1,42 @@
 import streamlit as st
 import requests
 import io
-from docx import Document
+import sys
+
+st.set_page_config(page_title="佛法修行", layout="wide")
+st.title("佛法修行")
+
+# Display Python version and installed packages
+st.sidebar.write(f"Python version: {sys.version}")
+st.sidebar.write("Installed packages:")
+st.sidebar.code("\n".join(f"{pkg.key}=={pkg.version}" for pkg in pkg_resources.working_set))
+
+try:
+    from docx import Document
+except ImportError:
+    st.error("無法導入 python-docx 庫。請確保已安裝該庫。")
 
 def main():
-    st.set_page_config(page_title="佛法修行", layout="wide")
-    st.title("佛法修行")
-
     # Sidebar
     st.sidebar.title("修行內容")
-
     # 迴向 section
     st.sidebar.header("迴向")
     if st.sidebar.button("迴向偈"):
         display_hui_xiang_ji()
 
 def fetch_docx_content(url):
-    response = requests.get(url)
-    if response.status_code == 200:
+    try:
+        response = requests.get(url)
+        response.raise_for_status()  # Raise an exception for bad status codes
         doc = Document(io.BytesIO(response.content))
         full_text = []
         for para in doc.paragraphs:
             full_text.append(para.text)
         return '\n'.join(full_text)
-    else:
-        return "無法獲取文件內容。請檢查網絡連接或文件鏈接。"
+    except requests.exceptions.RequestException as e:
+        return f"無法獲取文件內容。錯誤：{str(e)}"
+    except Exception as e:
+        return f"處理文件時出錯。錯誤：{str(e)}"
 
 def display_hui_xiang_ji():
     url = "https://github.com/jasonckb/Buddha/raw/main/%E5%9B%9E%E5%90%91%E5%81%88.docx"

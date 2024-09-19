@@ -77,6 +77,9 @@ def main():
     if st.sidebar.button("金剛經"):
         display_diamond_sutra()
 
+    if st.sidebar.button("般若波羅蜜多心經"):
+        display_heart_sutra()
+
 def fetch_docx_content(url):
     try:
         response = requests.get(url)
@@ -262,6 +265,43 @@ def display_diamond_sutra():
             st.error("無法獲取金剛經精句內容。")
         if not content_translation:
             st.error("無法獲取經文及翻譯內容。")
+
+def display_heart_sutra():
+    st.header("般若波羅蜜多心經")
+    
+    # Fetch the content
+    url = "https://raw.githubusercontent.com/jasonckb/Buddha/main/%E8%88%AC%E8%8B%A5%E6%B3%A2%E7%BE%85%E8%9C%9C%E5%A4%9A%E5%BF%83%E7%B6%93.txt"
+    content = fetch_text_content(url)
+    
+    if content:
+        parts = content.split('\n\n')
+        for part in parts:
+            if part.startswith('##'):
+                st.markdown(f"**{part[2:].strip()}**")
+            elif part.startswith('---'):
+                st.write(part[3:].strip())
+            else:
+                st.write(part.strip())
+        
+        # Add the chant
+        st.markdown("**心**咒**梵文:**")
+        st.markdown("**即說咒曰：**")
+        st.markdown("""
+        揭諦揭諦，
+        波羅揭諦，
+        波羅僧揭諦，
+        菩提薩婆訶。
+        """)
+        
+        # Add the video
+        st.write("心經咒影片：")
+        st.markdown("""
+        <div class="video-container">
+            <iframe src="https://www.youtube.com/embed/SBL2dcV9mWc?start=175&end=183" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+        """, unsafe_allow_html=True)
+    else:
+        st.error("無法獲取般若波羅蜜多心經內容。")
 
 if __name__ == "__main__":
     main()

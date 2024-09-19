@@ -297,7 +297,7 @@ def display_heart_sutra():
         st.write("心經咒影片：")
         st.markdown("""
         <div class="video-container">
-            <iframe src="https://www.youtube.com/embed/U3sUprsnAGU?start=175&end=183" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            <iframe src="https://www.youtube.com/embed/X8v8iAz9RLo" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
         </div>
         """, unsafe_allow_html=True)
     else:

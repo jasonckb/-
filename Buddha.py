@@ -292,6 +292,9 @@ def display_heart_sutra():
         波羅僧揭諦，
         菩提薩婆訶。
         """)
+        st.markdown("""
+        tädyāthā: gate gate pāragate pārasaṃgate bodhi svāhā
+        """)
         
         # Add the video
         st.write("心經咒影片：")

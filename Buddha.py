@@ -292,9 +292,6 @@ def display_heart_sutra():
         波羅僧揭諦，
         菩提薩婆訶。
         """)
-        st.markdown("""
-        tädyāthā: gate gate pāragate pārasaṃgate bodhi svāhā
-        """)
         
         # Add the video
         st.write("心經咒影片：")
@@ -303,6 +300,14 @@ def display_heart_sutra():
             <iframe src="https://www.youtube.com/embed/X8v8iAz9RLo" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
         </div>
         """, unsafe_allow_html=True)
+        
+        # Add the footnote with references
+        st.markdown("""
+        ---
+        **參考資料：**
+        1. [心經白話註解](https://www.6laws.net/99life/lawbook/%E5%BF%83%E7%B6%93%E7%99%BD%E8%A9%B1%E8%A8%BB%E8%A7%A3.htm)
+        2. Claude AI
+        """)
     else:
         st.error("無法獲取般若波羅蜜多心經內容。")
 
